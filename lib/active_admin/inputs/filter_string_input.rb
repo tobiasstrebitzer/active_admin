@@ -12,7 +12,7 @@ module ActiveAdmin
         if seems_searchable?
           input_wrapping do
             label_html <<
-            builder.text_field(method, input_html_options)
+            builder.text_field(method, {})
           end
         else
           super # SearchMethodSelect#to_html

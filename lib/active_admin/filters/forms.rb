@@ -13,6 +13,7 @@ module ActiveAdmin
 
       def filter(method, options = {})
         if method.present? && options[:as] ||= default_input_type(method)
+          options[:input_html] = {:class => 'form-control-filter'}
           input(method, options)
         end
       end
