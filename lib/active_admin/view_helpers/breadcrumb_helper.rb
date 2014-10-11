@@ -16,9 +16,14 @@ module ActiveAdmin
             config = parent && parent.resource_name.route_key == parts[index-1] ? parent : active_admin_config
             name   = display_name config.find_resource part
           end
-          name ||= I18n.t "activerecord.models.#{part.singularize}", :count => 1.1, :default => part.titlecase
+          name ||= I18n.t "activerecord.models.#{part.singularize}", count: ::ActiveAdmin::Helpers::I18n::PLURAL_MANY_COUNT, default: part.titlecase
 
-          link_to name, '/' + parts[0..index].join('/')
+          # Don't create a link if the resource's show action is disabled
+          if !config || config.defined_actions.include?(:show)
+            link_to name, '/' + parts[0..index].join('/')
+          else
+            name
+          end
         end
       end
 

@@ -27,7 +27,7 @@ module ActiveAdmin
       @use_form_buffer ? form_buffers.last << content : content
     end
 
-    def cancel_link(url = {:action => "index"}, html_options = {}, li_attrs = {})
+    def cancel_link(url = {action: "index"}, html_options = {}, li_attrs = {})
       li_attrs[:class] ||= "cancel"
       li_content = template.link_to I18n.t('active_admin.cancel'), url, html_options
       form_buffers.last << template.content_tag(:div, li_content, li_attrs)
@@ -82,28 +82,28 @@ module ActiveAdmin
 
       # make sure that the sortable children sorted in stable ascending order
       if column = builder_options[:sortable]
-        children = object.send(assoc)
-        children = children.reorder("#{column}, id")
-        options[:for] = [assoc,  children]
+        children = object.public_send(assoc).sort_by do |o|
+          attribute = o.public_send column
+          [attribute.nil? ? Float::INFINITY : attribute, o.id || Float::INFINITY]
+        end
+        options[:for] = [assoc, children]
       end
 
       html = without_wrapper do
         unless builder_options.key?(:heading) && !builder_options[:heading]
           form_buffers.last << template.content_tag(:h3) do
-            builder_options[:heading] || object.class.reflect_on_association(assoc).klass.model_name.human(count: 1.1)
+            builder_options[:heading] || object.class.reflect_on_association(assoc).klass.model_name.human(count: ::ActiveAdmin::Helpers::I18n::PLURAL_MANY_COUNT)
           end
         end
 
         inputs options, &form_block
 
-        form_buffers.last << js_for_has_many(assoc, form_block, template, builder_options[:new_record]) if builder_options[:new_record]
+        form_buffers.last << js_for_has_many(assoc, form_block, template, builder_options[:new_record], options[:class]) if builder_options[:new_record]
+        form_buffers.last
       end
 
-      form_buffers.last << if @already_in_an_inputs_block
-        template.content_tag :li,  html, class: "has_many_container #{assoc}", 'data-sortable' => builder_options[:sortable]
-      else
-        template.content_tag :div, html, class: "has_many_container #{assoc}", 'data-sortable' => builder_options[:sortable]
-      end
+      tag = @already_in_an_inputs_block ? :li : :div
+      form_buffers.last << template.content_tag(tag, html, class: "has_many_container #{assoc}", 'data-sortable' => builder_options[:sortable])
     end
 
     def semantic_errors(*args)
@@ -163,14 +163,14 @@ module ActiveAdmin
     end
 
     # Capture the ADD JS
-    def js_for_has_many(assoc, form_block, template, new_record)
+    def js_for_has_many(assoc, form_block, template, new_record, class_string)
       assoc_reflection = object.class.reflect_on_association assoc
       assoc_name       = assoc_reflection.klass.model_name
-      placeholder      = "NEW_#{assoc_name.to_s.upcase.split(' ').join('_')}_RECORD"
+      placeholder      = "NEW_#{assoc_name.to_s.underscore.upcase}_RECORD"
       opts = {
-        :for         => [assoc, assoc_reflection.klass.new],
-        :class       => "inputs has_many_fields",
-        :for_options => { child_index: placeholder }
+        for: [assoc, assoc_reflection.klass.new],
+        class: class_string,
+        for_options: { child_index: placeholder }
       }
       html = with_new_form_buffer{ inputs_for_nested_attributes opts, &form_block }
       text = new_record.is_a?(String) ? new_record : I18n.t('active_admin.has_many_new', model: assoc_name.human)

@@ -61,19 +61,19 @@ module ActiveAdmin
       # @return [ActiveAdmin::BatchAction] The default "delete" action
       def add_default_batch_action
         destroy_options = {
-          :priority => 100,
-          :confirm => proc{ I18n.t('active_admin.batch_actions.delete_confirmation', :plural_model => active_admin_config.plural_resource_label.downcase) },
-          :if      => proc{ controller.action_methods.include?('destroy') && authorized?(ActiveAdmin::Auth::DESTROY, active_admin_config.resource_class) }
+          priority: 100,
+          confirm: proc{ I18n.t('active_admin.batch_actions.delete_confirmation', plural_model: active_admin_config.plural_resource_label.downcase) },
+          if: proc{ controller.action_methods.include?('destroy') && authorized?(ActiveAdmin::Auth::DESTROY, active_admin_config.resource_class) }
         }
 
         add_batch_action :destroy, proc { I18n.t('active_admin.delete') }, destroy_options do |selected_ids|
           active_admin_config.resource_class.find(selected_ids).each { |r| r.destroy }
 
           redirect_to active_admin_config.route_collection_path(params),
-                      :notice => I18n.t("active_admin.batch_actions.succesfully_destroyed",
-                                        :count => selected_ids.count,
-                                        :model => active_admin_config.resource_label.downcase,
-                                        :plural_model => active_admin_config.plural_resource_label(:count => selected_ids.count).downcase)
+                      notice: I18n.t("active_admin.batch_actions.succesfully_destroyed",
+                                        count: selected_ids.count,
+                                        model: active_admin_config.resource_label.downcase,
+                                        plural_model: active_admin_config.plural_resource_label(count: selected_ids.count).downcase)
         end
       end
 
@@ -129,7 +129,8 @@ module ActiveAdmin
     end
 
     def inputs
-      HashWithIndifferentAccess.new @options[:form] || {}
+      HashWithIndifferentAccess.new \
+        @options[:form].is_a?(Proc) ? @options[:form].call : @options[:form]
     end
 
     # Returns the display if block. If the block was not explicitly defined

@@ -33,6 +33,9 @@ pl:
         ends_with: "Kończy się"
         greater_than: "Większe niż"
         less_than: "Mniejsze niż"
+    status_tag:
+      "yes": "Tak"
+      "no": "Nie"
     main_content: "Zaimplementuj %{model}#main_content aby wyświetlić treść."
     logout: "Wyloguj"
     powered_by: "Powered by %{active_admin} %{version}"
@@ -48,6 +51,8 @@ pl:
     blank_slate:
       content: "Nie ma jeszcze zasobu %{resource_name}."
       link: "Utwórz go"
+    dropdown_actions:
+      button_label: "Akcje"
     batch_actions:
       button_label: "Akcje na partiach"
       default_confirmation: "Czy na pewno chcesz to zrobić?"
@@ -73,6 +78,9 @@ pl:
       errors:
         empty_text: "Komentarz nie został zapisany, zawartość była pusta."
     devise:
+      sign_up:
+        title: "Rejestracja"
+        submit: "Zarejestruj się"
       login:
         title: "Logowanie"
         remember_me: "Zapamiętaj mnie"
@@ -83,6 +91,9 @@ pl:
       change_password:
         title: "Zmień hasło"
         submit: "Zmień hasło"
+      resend_confirmation_instructions:
+        title: "Wyślij ponownie instrukcje aktywacji"
+        submit: "Wyślij ponownie instrukcje aktywacji"
       links:
         sign_in: "Zaloguj się"
         forgot_your_password: "Nie pamiętasz hasła?"

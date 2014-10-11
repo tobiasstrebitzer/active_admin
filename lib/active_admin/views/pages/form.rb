@@ -29,8 +29,8 @@ module ActiveAdmin
 
         def default_form_options
           {
-            :url => default_form_path,
-            :as => active_admin_config.resource_name.singular
+            url: default_form_path,
+            as: active_admin_config.param_key
           }
         end
 
@@ -40,6 +40,7 @@ module ActiveAdmin
 
         def default_form_config
           ActiveAdmin::PagePresenter.new do |f|
+            f.semantic_errors # show errors on :base by default
             f.inputs
             f.actions
           end
